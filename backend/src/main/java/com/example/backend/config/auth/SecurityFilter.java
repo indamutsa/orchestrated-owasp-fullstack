@@ -1,94 +1,62 @@
 package com.example.backend.config.auth;
 
 import java.io.IOException;
-import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.example.backend.repository.UserRepository;
+import com.example.backend.security.JwtUtils;
+import com.example.backend.service.UserDetailsImpl;
+import com.example.backend.service.AuthService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
     @Autowired
-    private TokenProvider tokenProvider;
+    private JwtUtils jwtUtils;
 
     @Autowired
-    private UserRepository userRepository;
+    private AuthService userDetailsService;
+
+    private static final Logger logger = org.slf4j.LoggerFactory.getLogger(SecurityFilter.class);
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request,@NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        var token = this.recoverToken(request);
-        try { 
-            if (token != null) {
-                var username = tokenProvider.validateToken(token);
-                var user = userRepository.findByUsername(username);
-                System.out.println(user);
+        try {
+            String jwt = parseJwt(request);
+            if(jwt != null && jwtUtils.validateJwtToken(jwt)) {
+                String username = jwtUtils.getUserNameFromJwtToken(jwt);
 
-                var authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+                UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                    userDetails, null, userDetails.getAuthorities()
+                );
+                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
-
-        // Retrieve "secret" cookie from request
-        Cookie[] cookies = request.getCookies();
-
-        if (cookies != null) {
-                    System.out.println("Cookies: " + cookies);
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("secret")) {
-                    System.out.println("Secret cookie: " + cookie.getValue());
-                }
-            }
+        } catch (Exception e) {
+            logger.error("Cannot set user authentication: {}", e);
         }
-  
-            Cookie cookie = getCookie("secret");
-            response.addCookie(cookie);
 
-            filterChain.doFilter(request, response);
-        
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
+        filterChain.doFilter(request, response);
     }
 
-    private String recoverToken(HttpServletRequest request) {
-        String authHeader = request.getHeader("Authorization");
-        if (authHeader == null)
-            return null;
-        return authHeader.replace("Bearer ", "");
-    }
-    
-    private Cookie getCookie(String secret) throws NoSuchAlgorithmException {
-
-        // Create hash
-        MessageDigest md = MessageDigest.getInstance("SHA-256");
-        byte[] hash = md.digest(secret.getBytes(StandardCharsets.UTF_8));
-
-        // Convert hash to hex string
-        String hashedSecret = String.format("%064x", new BigInteger(1, hash));
-
-        // Create cookie with hashed secret
-        Cookie cookie = new Cookie("secret", hashedSecret);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(60);
-        cookie.setDomain("localhost");
-
-        return cookie;
+    private String parseJwt(HttpServletRequest request) {
+        String jwt = jwtUtils.getJwtFromCookies(request);
+        return jwt;
     }
 }

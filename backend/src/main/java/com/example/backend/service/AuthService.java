@@ -1,41 +1,62 @@
 package com.example.backend.service;
 
+import java.time.Instant;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.example.backend.DTO.SignUpDto;
-import com.example.backend.exceptions.InvalidJwtException;
+import com.example.backend.models.ERole;
+import com.example.backend.models.Role;
 import com.example.backend.models.User;
+import com.example.backend.repository.RoleRepository;
 import com.example.backend.repository.UserRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
-public class AuthService implements UserDetailsService {
+public class AuthService implements UserDetailsService{
+    @Autowired
+    UserRepository userRepository;
 
     @Autowired
-    private UserRepository userRepository;
-
-
+    RoleRepository roleRepository;
 
     @Override
+    @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        var user = userRepository.findByUsername(username);
-        return (UserDetails) user;
+        User user = userRepository.findByUsername(username).orElseThrow(
+            () -> new UsernameNotFoundException("User Not Found with username: " + username)
+        );
+        return UserDetailsImpl.build(user);
     }
 
-    public UserDetails signUp(SignUpDto data) throws InvalidJwtException{
-        if (userRepository.findByUsername(data.username()) != null) {
-            throw new InvalidJwtException("Username already exists");
-        }
-        
-        String encryptedPassword = new BCryptPasswordEncoder().encode(data.password());
-
-        User newUser = new User(data.username(), encryptedPassword, data.role());
-
-        return userRepository.save(newUser);
+    public boolean existsByUsername(String username) {
+        return userRepository.existsByUsername(username);
     }
-    
+
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    public Role findRoleByName(ERole role) {
+        return roleRepository.findByName(role).orElseThrow(
+            () -> new RuntimeException("Error: Role is not found.")
+        );
+    }
+
+    public void saveUser(User user) {
+        userRepository.save(user);
+    }
+
+    public void updateTokenIssuedAt(UUID userId, Instant issuedAt) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new UsernameNotFoundException("User Not Found with id: " + userId));
+
+        user.setTokenIssuedAt(issuedAt);
+        userRepository.save(user);
+    }
 }

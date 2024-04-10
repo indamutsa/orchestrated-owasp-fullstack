@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 
 @SpringBootApplication
 public class ItemApplication {
-	@Value("${security.jwt.token.secret-key}")
+	@Value("${spring.application.name}")
 	private String envKey;
 
 	public static void main(String[] args) {

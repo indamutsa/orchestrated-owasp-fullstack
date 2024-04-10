@@ -1,76 +1,76 @@
 package com.example.backend.models;
 
-import java.util.Collection;
-import java.util.List;
+import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+import lombok.Getter;
 
-@Entity(name = "users")
-public class User implements UserDetails {
+@Entity
+@Getter
+@Table(name = "users", uniqueConstraints = {
+           @UniqueConstraint(columnNames = "username"),
+           @UniqueConstraint(columnNames = "email")
+       })
+public class User {
     
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
+    @NotBlank
+    @Size(max = 20)
     private String username;
+
+    @NotBlank
+    @Size(max = 120)
     private String password;
 
-    @Enumerated(EnumType.STRING)
-    private UserRole role;
+    @NotBlank
+    @Size(max = 50)
+    @Email
+    private String email;
 
+    private Instant tokenIssuedAt;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
+    
     public User() {
-    }
-
-    public User(String username, String password, UserRole role) {
-        this.username = username;
-        this.password = password;
-        this.role = role;
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        if (this.role == UserRole.ADMIN)
-            return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
-    }
-
-    public UUID getId() {
-        return this.id;
-    }
-
-    @Override
-    public String getUsername() {
-        return this.username;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
-
-    @Override
-    public String getPassword() {
-        return this.password;
+    
     }
     
+    public User(String username, String password, String email) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+    }
+    
+    // Getters with lombok
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+    
+    public Instant getTokenIssuedAt() {
+        return tokenIssuedAt;
+    }
+
+    public void setTokenIssuedAt(Instant tokenIssuedAt) {
+        this.tokenIssuedAt = tokenIssuedAt;
+    }
+
+    @Override
+    public String toString() {
+        return "User [id=" + id + ", username=" + username + ", email=" + email + "]";
+    }
 }
