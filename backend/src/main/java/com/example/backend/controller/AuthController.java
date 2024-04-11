@@ -31,7 +31,6 @@ import com.example.backend.DTO.SigninRequest;
 import com.example.backend.DTO.SignupRequest;
 import com.example.backend.DTO.TokenRefreshResponse;
 import com.example.backend.DTO.UserInfoResponse;
-import com.example.backend.exceptions.TokenRefreshException;
 import com.example.backend.models.ERole;
 import com.example.backend.models.RefreshToken;
 import com.example.backend.models.Role;
