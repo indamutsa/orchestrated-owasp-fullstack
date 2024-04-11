@@ -1,5 +1,6 @@
 package com.example.backend.security;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 
@@ -13,8 +14,8 @@ import org.springframework.web.util.WebUtils;
 import com.example.backend.service.UserDetailsImpl;
 
 import io.jsonwebtoken.*;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -31,14 +32,16 @@ public class JwtUtils {
     @Value("${backend.app.jwtCookieName}")
     private String jwtCookie;
 
-    public String getJwtFromCookies(HttpServletRequest request) {
-        Cookie cookie = WebUtils.getCookie(request, jwtCookie);
+    private Key key;
 
-        if (cookie != null) {
-            return cookie.getValue();
-        } else {
-            return null;
-        }
+    @PostConstruct
+    public void init() {
+        this.key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public String getJwtFromCookies(HttpServletRequest request) {
+      Cookie cookie = WebUtils.getCookie(request, jwtCookie);
+      return cookie == null ? null : cookie.getValue();
     }
     
     public ResponseCookie generateJwtCookie(UserDetailsImpl userDetails) {
@@ -46,7 +49,7 @@ public class JwtUtils {
         return ResponseCookie.from(jwtCookie, jwt)
                 .httpOnly(true)
                 .maxAge(jwtExpirationMs)
-                .path("/api")
+                .path("/")
                 .build();
     }
 
@@ -60,7 +63,7 @@ public class JwtUtils {
     }
 
     private Key key() {
-        return Keys.secretKeyFor(SignatureAlgorithm.HS256);
+      return this.key;
     }
 
     public String getUserNameFromJwtToken(String token) {
@@ -69,13 +72,15 @@ public class JwtUtils {
     }
 
     public ResponseCookie getCleanJwtCookie() {
-        ResponseCookie cookie = ResponseCookie.from(jwtCookie, null).path("/api").build();
+        ResponseCookie cookie = ResponseCookie.from(jwtCookie, null).path("/").build();
     return cookie;
   }
 
- public boolean validateJwtToken(String authToken) {
+  public boolean validateJwtToken(String authToken) {
     try {
+      // System.out.println(authToken +  "  ======================== jwt  =====================");
       Jwts.parserBuilder().setSigningKey(key()).build().parse(authToken);
+      
       return true;
     } catch (MalformedJwtException e) {
       logger.error("Invalid JWT token: {}", e.getMessage());

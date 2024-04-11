@@ -2,6 +2,7 @@ package com.example.backend.controller;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -137,27 +138,38 @@ public class AuthController {
     public ResponseEntity<?> refreshtoken(@Valid @RequestBody RefreshTokenRequest request) {
         String requestRefreshToken = request.getRefreshToken();
 
-        return refreshTokenService.findByToken(requestRefreshToken)
-            .map((RefreshToken refreshToken) -> refreshTokenService.verifyExpiration(refreshToken))
-            .map((RefreshToken refreshToken) -> refreshToken.getUser())
-            .map((User user) -> {
-            String token = jwtUtils.generateTokenFromUsername(user.getUsername());
-            return ResponseEntity.ok(new TokenRefreshResponse(token, requestRefreshToken));
-            })
-            .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
-                "Refresh token is not in database!"));
+        Optional<RefreshToken> refreshTokenOptional = refreshTokenService.findByToken(requestRefreshToken);
+
+        if (!refreshTokenOptional.isPresent()) {
+            return ResponseEntity.ok(new TokenRefreshResponse("Unkown Refresh token...!", requestRefreshToken));
+        }
+
+        RefreshToken refreshToken = refreshTokenOptional.get();
+        refreshTokenService.verifyExpiration(refreshToken);
+
+        User user = refreshToken.getUser();
+        String token = jwtUtils.generateTokenFromUsername(user.getUsername());
+
+        // Invalidate the refresh token after it's used
+        refreshTokenService.invalidateRefreshToken(requestRefreshToken);
+
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, token).body(new TokenRefreshResponse(token, requestRefreshToken));
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logoutUser(HttpServletRequest request) {
+    public ResponseEntity<?> logoutUser(@RequestBody String refreshToken ,HttpServletRequest request) {
         // Invalidate the user's session
         request.getSession().invalidate();
 
         // Clear the authentication context
         SecurityContextHolder.getContext().setAuthentication(null);
 
+        // Invalidate the refresh token
+        refreshTokenService.invalidateRefreshToken(refreshToken);
+
         // Clean up the JWT cookie
         ResponseCookie jwtCookie = jwtUtils.getCleanJwtCookie();
+
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
                 .body(new MessageResponse("Logout successful!"));
     }

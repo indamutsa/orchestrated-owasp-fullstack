@@ -60,8 +60,13 @@ public class RefreshTokenService {
     return token;
   }
 
+  public void invalidateRefreshToken(String token) {
+        refreshTokenRepository.findByToken(token)
+            .ifPresent(refreshTokenRepository::delete);
+    }
+
   @Transactional
   public int deleteByUserId(UUID userId) {
-    return refreshTokenRepository.deleteByUser(userRepository.findById(userId).get());
+     return refreshTokenRepository.deleteByUser(userRepository.findById(userId).get());
   }
 }
