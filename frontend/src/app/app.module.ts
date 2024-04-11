@@ -1,5 +1,8 @@
 import { NgModule } from '@angular/core';
-import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
+import {
+  BrowserModule,
+  provideClientHydration,
+} from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -11,8 +14,13 @@ import { BoardAdminComponent } from './components/board-admin/board-admin.compon
 import { BoardModeratorComponent } from './components/board-moderator/board-moderator.component';
 import { BoardUserComponent } from './components/board-user/board-user.component';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule, provideHttpClient, withFetch } from '@angular/common/http';
+import {
+  HttpClientModule,
+  provideHttpClient,
+  withFetch,
+} from '@angular/common/http';
 import { httpInterceptorProviders } from './interceptors/interceptors';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'; // import this
 
 @NgModule({
   declarations: [
@@ -25,7 +33,13 @@ import { httpInterceptorProviders } from './interceptors/interceptors';
     BoardModeratorComponent,
     BoardUserComponent,
   ],
-  imports: [BrowserModule, AppRoutingModule, FormsModule, HttpClientModule],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    FormsModule,
+    HttpClientModule,
+    FontAwesomeModule,
+  ],
   providers: [
     provideClientHydration(),
     provideHttpClient(withFetch()),

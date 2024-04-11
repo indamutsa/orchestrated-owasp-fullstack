@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { StorageService } from '../../services/storage.service';
 import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
+import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-login',
@@ -19,13 +22,21 @@ export class LoginComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private storageService: StorageService
-  ) {}
+    private storageService: StorageService,
+    private router: Router,
+    private library: FaIconLibrary
+  ) {
+    this.library.addIcons(faSearch);
+  }
 
   ngOnInit(): void {
     if (this.storageService.isLoggedIn()) {
       this.isLoggedIn = true;
       this.roles = this.storageService.getUser().roles;
+
+      setTimeout(() => {
+        this.router.navigate(['/']);
+      }, 500);
     }
   }
 
