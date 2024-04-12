@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/items")
+@RequestMapping("/api/items")
 public class ItemController {
     @Autowired
     private ItemService itemService;
@@ -41,9 +41,16 @@ public class ItemController {
         return new ResponseEntity<>(item, HttpStatus.OK);
     }
 
-    @PostMapping
-    public ResponseEntity<Item> createItem(@RequestBody Item item) {
-        Item createdItem = itemService.createItem(item);
+    // Get items by user id
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Item>> getItemsByUser(@PathVariable UUID userId) {
+        List<Item> items = itemService.getItemsByUser(userId);
+        return ResponseEntity.ok().body(items);
+    }
+
+    @PostMapping("/{userId}")
+    public ResponseEntity<Item> createItem(@PathVariable UUID userId, @RequestBody Item item) {
+        Item createdItem = itemService.createItem(item, userId);
         return new ResponseEntity<>(createdItem, HttpStatus.CREATED);
     }
 

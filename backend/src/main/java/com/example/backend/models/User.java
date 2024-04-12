@@ -1,6 +1,5 @@
 package com.example.backend.models;
 
-import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -34,8 +33,6 @@ public class User {
     @Email
     private String email;
 
-    private Instant tokenIssuedAt;
-
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -59,14 +56,6 @@ public class User {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
-    }
-    
-    public Instant getTokenIssuedAt() {
-        return tokenIssuedAt;
-    }
-
-    public void setTokenIssuedAt(Instant tokenIssuedAt) {
-        this.tokenIssuedAt = tokenIssuedAt;
     }
 
     @Override

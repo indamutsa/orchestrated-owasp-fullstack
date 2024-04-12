@@ -4,7 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.backend.models.Item;
+import com.example.backend.models.User;
 import com.example.backend.repository.ItemRepository;
+import com.example.backend.repository.UserRepository;
 
 import java.util.*;
 
@@ -12,6 +14,9 @@ import java.util.*;
 public class ItemService {
     @Autowired
     private ItemRepository itemRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     public List<Item> getAllItems() {
         return itemRepository.findAll();
@@ -21,7 +26,10 @@ public class ItemService {
         return itemRepository.findById(id).orElse(null);
     }
 
-    public Item createItem(Item item) {
+    public Item createItem(Item item, UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Error: User not found."));
+        item.setUser(user);
         return itemRepository.save(item);
     }
     
@@ -44,6 +52,12 @@ public class ItemService {
             return false;
         itemRepository.delete(item);
         return true;
+    }
+
+    public List<Item> getItemsByUser(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Error: User not found."));
+        return itemRepository.findByUser(user);
     }
 }
 

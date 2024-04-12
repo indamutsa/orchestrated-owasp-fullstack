@@ -2,14 +2,25 @@ package com.example.backend.models;
 
 import java.util.UUID;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 @Entity
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
+
+    @NotBlank
+    @Size(max = 20)
     private String name;
+
+    @NotBlank
     private String description;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     public Item() {
     }
@@ -43,6 +54,17 @@ public class Item {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    // Add user id to the item, which is the foreign key of one to many relationship
+
 
     @Override
     public String toString() {

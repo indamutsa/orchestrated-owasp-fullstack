@@ -56,7 +56,6 @@ public class AuthService implements UserDetailsService{
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new UsernameNotFoundException("User Not Found with id: " + userId));
 
-        user.setTokenIssuedAt(issuedAt);
         userRepository.save(user);
     }
 }

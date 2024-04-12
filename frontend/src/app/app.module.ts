@@ -20,7 +20,8 @@ import {
   withFetch,
 } from '@angular/common/http';
 import { httpInterceptorProviders } from './interceptors/interceptors';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'; // import this
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { NavbarComponent } from './components/navbar/navbar.component'; // import this
 
 @NgModule({
   declarations: [
@@ -32,6 +33,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome'; // import 
     BoardAdminComponent,
     BoardModeratorComponent,
     BoardUserComponent,
+    NavbarComponent,
   ],
   imports: [
     BrowserModule,

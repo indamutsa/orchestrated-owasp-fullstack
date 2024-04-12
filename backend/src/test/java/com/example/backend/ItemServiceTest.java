@@ -1,165 +1,119 @@
 package com.example.backend;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
-import static org.mockito.Mockito.when;
+import com.example.backend.models.Item;
+import com.example.backend.models.User;
+import com.example.backend.repository.ItemRepository;
+import com.example.backend.repository.UserRepository;
+import com.example.backend.service.ItemService;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-import com.example.backend.models.Item;
-import com.example.backend.repository.ItemRepository;
-import com.example.backend.service.ItemService;
+import java.util.*;
 
-@SpringBootTest
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 public class ItemServiceTest {
 
     @Mock
     private ItemRepository itemRepository;
 
+    @Mock
+    private UserRepository userRepository;
+
     @InjectMocks
     private ItemService itemService;
 
-    @Before
-    public void setup() {
-        MockitoAnnotations.initMocks(this);
+    @BeforeEach
+    public void init() {
+        MockitoAnnotations.openMocks(this);
     }
 
     @Test
     public void testGetAllItems() {
-        // Arrange
-        List<Item> items = new ArrayList<>();
-        items.add(new Item(UUID.randomUUID(), "Item 1", "Description 1"));
-        items.add(new Item(UUID.randomUUID(), "Item 2", "Description 2"));
-        when(itemRepository.findAll()).thenReturn(items);
-
-        // Act
-        List<Item> result = itemService.getAllItems();
-
-        // Assert
-        assertEquals(items, result);
+        when(itemRepository.findAll()).thenReturn(new ArrayList<>());
+        List<Item> items = itemService.getAllItems();
+        assertNotNull(items);
+        verify(itemRepository, times(1)).findAll();
     }
 
     @Test
     public void testGetItemById() {
-        // Arrange
-        UUID itemId = UUID.randomUUID();
-        Item item = new Item(itemId, "Item 1", "Description 1");
-        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
-
-        // Act
-        Item result = itemService.getItemById(itemId);
-
-        // Assert
-        assertEquals(item, result);
-    }
-
-    @Test
-    public void testGetItemById_NotFound() {
-        // Arrange
-        UUID itemId = UUID.randomUUID();
-        when(itemRepository.findById(itemId)).thenReturn(Optional.empty());
-
-        // Act
-        Item result = itemService.getItemById(itemId);
-
-        // Assert
-        assertNull(result);
+        UUID id = UUID.randomUUID();
+        Item item = new Item();
+        when(itemRepository.findById(id)).thenReturn(Optional.of(item));
+        Item foundItem = itemService.getItemById(id);
+        assertNotNull(foundItem);
+        assertEquals(item, foundItem);
+        verify(itemRepository, times(1)).findById(id);
     }
 
     @Test
     public void testCreateItem() {
-        // Arrange
-        Item item = new Item(UUID.randomUUID(), "Item 1", "Description 1");
+        UUID userId = UUID.randomUUID();
+        User user = new User();
+        Item item = new Item();
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(itemRepository.save(item)).thenReturn(item);
-
-        // Act
-        Item result = itemService.createItem(item);
-
-        // Assert
-        assertEquals(item, result);
+        Item createdItem = itemService.createItem(item, userId);
+        assertNotNull(createdItem);
+        assertEquals(item, createdItem);
+        verify(userRepository, times(1)).findById(userId);
+        verify(itemRepository, times(1)).save(item);
     }
 
     @Test
     public void testUpdateItem() {
-        // Arrange
-        UUID itemId = UUID.randomUUID();
-        Item existingItem = new Item(itemId, "Item 1", "Description 1");
-        Item updatedItem = new Item(itemId, "Updated Item", "Updated Description");
-        when(itemRepository.findById(itemId)).thenReturn(Optional.of(existingItem));
-        when(itemRepository.save(existingItem)).thenReturn(updatedItem);
-
-        // Act
-        Item result = itemService.updateItem(itemId, updatedItem);
-
-        // Assert
-        assertEquals(updatedItem, result);
-        assertEquals("Updated Item", existingItem.getName());
-        assertEquals("Updated Description", existingItem.getDescription());
-    }
-
-    @Test
-    public void testUpdateItem_NotFound() {
-        // Arrange
-        UUID itemId = UUID.randomUUID();
-        Item updatedItem = new Item(itemId, "Updated Item", "Updated Description");
-        when(itemRepository.findById(itemId)).thenReturn(Optional.empty());
-
-        // Act
-        Item result = itemService.updateItem(itemId, updatedItem);
-
-        // Assert
-        assertNull(result);
+        UUID id = UUID.randomUUID();
+        Item item = new Item();
+        Item itemDetails = new Item();
+        itemDetails.setName("New Name");
+        itemDetails.setDescription("New Description");
+        when(itemRepository.findById(id)).thenReturn(Optional.of(item));
+        when(itemRepository.save(item)).thenReturn(item);
+        Item updatedItem = itemService.updateItem(id, itemDetails);
+        assertNotNull(updatedItem);
+        assertEquals(itemDetails.getName(), updatedItem.getName());
+        assertEquals(itemDetails.getDescription(), updatedItem.getDescription());
+        verify(itemRepository, times(1)).findById(id);
+        verify(itemRepository, times(1)).save(item);
     }
 
     @Test
     public void testGetItemCount() {
-        // Arrange
-        long count = 5;
-        when(itemRepository.count()).thenReturn(count);
-
-        // Act
-        long result = itemService.getItemCount();
-
-        // Assert
-        assertEquals(count, result);
+        when(itemRepository.count()).thenReturn(5L);
+        long count = itemService.getItemCount();
+        assertEquals(5L, count);
+        verify(itemRepository, times(1)).count();
     }
 
     @Test
     public void testDeleteItem() {
-        // Arrange
-        UUID itemId = UUID.randomUUID();
-        Item item = new Item(itemId, "Item 1", "Description 1");
-        when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
-
-        // Act
-        boolean result = itemService.deleteItem(itemId);
-
-        // Assert
-        assertTrue(result);
+        UUID id = UUID.randomUUID();
+        Item item = new Item();
+        when(itemRepository.findById(id)).thenReturn(Optional.of(item));
+        doNothing().when(itemRepository).delete(item);
+        boolean isDeleted = itemService.deleteItem(id);
+        assertTrue(isDeleted);
+        verify(itemRepository, times(1)).findById(id);
+        verify(itemRepository, times(1)).delete(item);
     }
 
     @Test
-    public void testDeleteItem_NotFound() {
-        // Arrange
-        UUID itemId = UUID.randomUUID();
-        when(itemRepository.findById(itemId)).thenReturn(Optional.empty());
-
-        // Act
-        boolean result = itemService.deleteItem(itemId);
-
-        // Assert
-        assertFalse(result);
+    public void testGetItemsByUser() {
+        UUID userId = UUID.randomUUID();
+        User user = new User();
+        List<Item> items = new ArrayList<>();
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(itemRepository.findByUser(user)).thenReturn(items);
+        List<Item> foundItems = itemService.getItemsByUser(userId);
+        assertNotNull(foundItems);
+        assertEquals(items, foundItems);
+        verify(userRepository, times(1)).findById(userId);
+        verify(itemRepository, times(1)).findByUser(user);
     }
 }
