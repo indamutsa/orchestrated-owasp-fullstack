@@ -97,7 +97,7 @@ public class ItemServiceTest {
         Item item = new Item();
         when(itemRepository.findById(id)).thenReturn(Optional.of(item));
         doNothing().when(itemRepository).delete(item);
-        boolean isDeleted = itemService.deleteItem(id);
+        boolean isDeleted = itemService.deleteItem(id, item.getId());
         assertTrue(isDeleted);
         verify(itemRepository, times(1)).findById(id);
         verify(itemRepository, times(1)).delete(item);

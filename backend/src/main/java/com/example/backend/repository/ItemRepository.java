@@ -8,4 +8,5 @@ import com.example.backend.models.User;
 
 public interface ItemRepository extends JpaRepository<Item, UUID>{
     List<Item> findByUser(User user);
+    Optional<Item> findByUserId(UUID id);
 }

@@ -14,6 +14,8 @@ import com.example.backend.models.Role;
 import com.example.backend.models.User;
 import com.example.backend.repository.RoleRepository;
 import com.example.backend.repository.UserRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.transaction.Transactional;
 
@@ -41,11 +43,15 @@ public class AuthService implements UserDetailsService{
     public boolean existsByEmail(String email) {
         return userRepository.existsByEmail(email);
     }
-
     public Role findRoleByName(ERole role) {
         return roleRepository.findByName(role).orElseThrow(
-            () -> new RuntimeException("Error: Role is not found.")
-        );
+                () -> new RuntimeException("Error: Role is not found."));
+    }
+
+    @Transactional
+    public String getUserAsJson(UUID userId) throws JsonProcessingException {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return new ObjectMapper().writeValueAsString(user);
     }
 
     public void saveUser(User user) {

@@ -57,7 +57,7 @@ public class AuthConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
             .authorizeHttpRequests(authorize -> authorize
-                    .requestMatchers(HttpMethod.GET, "/api/items/**").hasRole("ADMIN")
+                    .requestMatchers("/api/items/**").permitAll()
                     // .requestMatchers(HttpMethod.POST, "/items").hasRole("ADMIN")
                     // .requestMatchers(HttpMethod.DELETE, "/items/**").hasRole("ADMIN")
                         // .requestMatchers(HttpMethod.PUT, "/items/**").hasRole("ADMIN")

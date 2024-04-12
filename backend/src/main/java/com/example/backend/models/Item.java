@@ -1,9 +1,14 @@
 package com.example.backend.models;
 
 import java.util.UUID;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+
 
 @Entity
 public class Item {
@@ -12,12 +17,15 @@ public class Item {
     private UUID id;
 
     @NotBlank
-    @Size(max = 20)
     private String name;
 
     @NotBlank
     private String description;
 
+    @JsonIdentityInfo(
+        generator = ObjectIdGenerators.PropertyGenerator.class, 
+        property = "id")
+    @JsonIdentityReference(alwaysAsId = true)
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -72,6 +80,7 @@ public class Item {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
+                ", user=" + user.getId() +
                 '}';
     }
 }

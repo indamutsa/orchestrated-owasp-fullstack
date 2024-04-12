@@ -5,8 +5,8 @@ import java.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.RestController;
 
+import com.example.backend.DTO.ItemIdWrapper;
 import com.example.backend.models.Item;
 import com.example.backend.service.ItemService;
 
@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/items")
+@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600, allowCredentials="true")
 public class ItemController {
     @Autowired
     private ItemService itemService;
@@ -34,7 +35,7 @@ public class ItemController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Item> getItem(@PathVariable UUID id) {
+    public ResponseEntity<Item> getItem(@PathVariable("id") UUID id) {
         Item item = itemService.getItemById(id);
         if (item == null)
             return ResponseEntity.notFound().build();
@@ -54,17 +55,18 @@ public class ItemController {
         return new ResponseEntity<>(createdItem, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Item> updateItem(@PathVariable UUID id, @RequestBody Item itemDetails) {
-        Item updatedItem = itemService.updateItem(id, itemDetails);
+    @PutMapping("/{userId}")
+    public ResponseEntity<Item> updateItem(@PathVariable UUID userId, @RequestBody Item itemDetails) {
+        Item updatedItem = itemService.updateItem(userId, itemDetails);
         if (updatedItem == null)
             return ResponseEntity.notFound().build();
         return new ResponseEntity<>(updatedItem, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteItem(@PathVariable UUID id) {
-        boolean deleted = itemService.deleteItem(id);
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Void> deleteItem(@PathVariable UUID userId, @RequestBody ItemIdWrapper itemIdWrapper) {
+        UUID itemId = itemIdWrapper.getItemId();
+        boolean deleted = itemService.deleteItem(userId, itemId);
         if (!deleted)
             return ResponseEntity.notFound().build();
         return ResponseEntity.noContent().build();

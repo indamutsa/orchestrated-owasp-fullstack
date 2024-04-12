@@ -2,6 +2,7 @@ import uuid
 from faker import Faker
 import psycopg2
 import random
+import bcrypt
 
 # Initialize faker
 fake = Faker()
@@ -29,12 +30,15 @@ users = ["lissette", "grace", "arsene", "markus", "dane", "samantha"]
 for user in users:
     user_id = str(uuid.uuid4())
     email = f"{user}@indamutsa.net"
-    user_roles = random.sample(roles, random.randint(1, 3))  # Select 1, 2, or 3 roles randomly
-
+    user_roles = random.sample(roles, random.randint(1, 3))
+    password = "indamutsa"
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    decoded_password = hashed_password.decode('utf-8')  # Decode the byte string
+    
     user = (
         user_id,
         user,
-        "indamutsa",
+        decoded_password,
         email,
     )
 
@@ -73,6 +77,7 @@ for user in users:
 
         # Execute the query
         cur.execute(insert_item_query, item)
+        
 
 # Commit the transaction
 conn.commit()

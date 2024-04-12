@@ -80,7 +80,7 @@ public class AuthController {
 
         if (strRoles == null) {
             Role userRole = authService.findRoleByName(ERole.ROLE_USER);
-            System.out.println(userRole);
+
             roles.add(userRole);
         } else {
             strRoles.forEach(role -> {
