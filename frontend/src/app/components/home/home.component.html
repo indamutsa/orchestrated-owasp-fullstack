@@ -9,9 +9,11 @@
     </div>
   </div>
   <div class="d-flex justify-content-end my-3">
-    <button class="btn btn-success px-5" (click)="onAddItem()">Add Item</button>
+    <button class="btn btn-success px-5" (click)="onAddItem()">
+      Click To Add Item
+    </button>
   </div>
-  
+
   <div class="bg-body-secondary item-container">
     <!-- iterate through the content data -->
     <div *ngFor="let item of items">
@@ -24,7 +26,7 @@
           <button class="btn btn-secondary" (click)="onUpdateButtonClick(item)">
             Update
           </button>
-          <button class="btn btn-danger" (click)="onDeleteButtonClick()">
+          <button class="btn btn-danger" (click)="onDeleteButtonClick(item)">
             Delete
           </button>
         </div>
@@ -60,7 +62,7 @@
             type="button"
             class="btn btn-danger"
             id="confirmDeleteButton"
-            (click)="onConfirmDelete()"
+            (click)="onDeleteConfirm()"
           >
             Delete
           </button>
@@ -175,8 +177,8 @@
           </button>
           <button
             type="button"
-            class="btn btn-primary"
-            (click)="onConfirmUpdate()"
+            class="btn btn-success"
+            (click)="onAddItemConfirm()"
           >
             Add Item
           </button>

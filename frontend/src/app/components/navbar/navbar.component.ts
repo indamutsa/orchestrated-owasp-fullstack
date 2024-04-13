@@ -3,6 +3,7 @@ import { Subscription } from 'rxjs';
 import { AuthService } from '../../services/auth.service';
 import { StorageService } from '../../services/storage.service';
 import { EventBusService } from '../../shared/EventBusService';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-navbar',
@@ -21,7 +22,8 @@ export class NavbarComponent {
   constructor(
     private storageService: StorageService,
     private authService: AuthService,
-    private eventBusService: EventBusService
+    private eventBusService: EventBusService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -54,5 +56,9 @@ export class NavbarComponent {
         console.log(err);
       },
     });
+  }
+
+  goToHome(): void {
+    this.router.navigate(['/home']);
   }
 }

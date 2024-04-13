@@ -69,16 +69,19 @@ export class HomeComponent implements OnInit {
   }
 
   onAddItem() {
+    this.selectedItem = { name: '', description: '' };
     this.addItemModal.show();
   }
 
-  onDeleteButtonClick() {
+  onDeleteButtonClick(item: Item) {
+    this.selectedItem = item;
+    // console.log('Deleting item:', item);
+
     this.deleteModal.show();
   }
 
   onConfirmDelete() {
-    // Perform the deletion here
-    console.log('Item deleted');
+    this.selectedItem = { name: '', description: '' };
     this.deleteModal.hide();
   }
 
@@ -87,9 +90,45 @@ export class HomeComponent implements OnInit {
     this.updateItemModal.show();
   }
 
+  // Add the item to the list
+  onAddItemConfirm() {
+    const item = {
+      name: this.selectedItem.name,
+      description: this.selectedItem.description,
+    };
+    this.itemService.addItem(item, this.userId).subscribe({
+      next: (data) => {
+        // console.log('Item added:', data);
+        this.addItemModal.hide();
+      },
+      error: (err) => {
+        console.log(err);
+      },
+    });
+  }
+
+  // On delete confirm
+  onDeleteConfirm() {
+    this.itemService.deleteItem(this.selectedItem.id, this.userId).subscribe({
+      next: () => {
+        // console.log('Item deleted:', this.selectedItem.id);
+        this.deleteModal.hide();
+      },
+      error: (err) => {
+        console.log(err);
+      },
+    });
+  }
+  // On confirm update
   onConfirmUpdate() {
-    // Perform the update here
-    console.log('Item updated:', this.selectedItem);
-    this.updateItemModal.hide();
+    this.itemService.updateItem(this.userId, this.selectedItem).subscribe({
+      next: (data) => {
+        // console.log('Item updated:', data);
+        this.updateItemModal.hide();
+      },
+      error: (err) => {
+        console.log(err);
+      },
+    });
   }
 }

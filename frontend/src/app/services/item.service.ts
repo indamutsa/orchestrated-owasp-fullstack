@@ -30,7 +30,7 @@ export class ItemService {
 
   addItem(item: any, userId: string): Observable<any> {
     return this.http
-      .post<any>(ITEM_API + `?userId=${userId}`, item, {
+      .post<any>(ITEM_API + `/${userId}`, item, {
         responseType: 'json',
       })
       .pipe(
@@ -41,15 +41,17 @@ export class ItemService {
       );
   }
 
-  updateItem(itemId: string, item: any, userId: string): Observable<any> {
+  updateItem(userId: string, item: any): Observable<any> {
+    // console.log('Updating item:', item);
+
     return this.http
-      .put(ITEM_API + `/${itemId}?userId=${userId}`, item, {
+      .put(ITEM_API + `/${userId}`, item, {
         responseType: 'json',
       })
       .pipe(
         tap((updatedItem) => {
           const currentItems = this.itemSubject.value;
-          const index = currentItems.findIndex((item) => item.id === itemId);
+          const index = currentItems.findIndex((i) => i.id === item.id);
 
           if (index !== -1) {
             currentItems[index] = updatedItem;

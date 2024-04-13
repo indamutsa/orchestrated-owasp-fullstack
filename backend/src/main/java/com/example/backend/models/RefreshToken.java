@@ -9,7 +9,6 @@ public class RefreshToken {
   private UUID userId; // Changed from User user to UUID userId
   private String token;
   private Instant expiryDate;
-  private Instant creationDate;
 
   //getters and setters
   public UUID getId() {

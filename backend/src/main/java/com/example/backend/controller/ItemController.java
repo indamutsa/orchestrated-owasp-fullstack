@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 
-import com.example.backend.DTO.ItemIdWrapper;
 import com.example.backend.models.Item;
 import com.example.backend.service.ItemService;
 
@@ -64,9 +63,9 @@ public class ItemController {
         return new ResponseEntity<>(updatedItem, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<Void> deleteItem(@PathVariable UUID userId, @RequestBody ItemIdWrapper itemIdWrapper) {
-        UUID itemId = itemIdWrapper.getId();
+    @DeleteMapping("/{itemId}")
+    public ResponseEntity<Void> deleteItem(@PathVariable UUID itemId, @RequestParam UUID userId) {
+        System.out.println("Delete item: " + itemId + " by user: " + userId);
         boolean deleted = itemService.deleteItem(userId, itemId);
         if (!deleted)
             return ResponseEntity.notFound().build();

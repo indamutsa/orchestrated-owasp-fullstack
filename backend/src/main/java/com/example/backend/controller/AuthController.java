@@ -117,7 +117,7 @@ public class AuthController {
         ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
 
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
-        System.out.println("Refresh Token: " + refreshToken.getToken());
+        // System.out.println("Refresh Token: " + refreshToken.getToken());
 
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())

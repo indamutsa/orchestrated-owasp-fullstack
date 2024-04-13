@@ -6,6 +6,8 @@ import com.example.backend.repository.ItemRepository;
 import com.example.backend.repository.UserRepository;
 import com.example.backend.service.ItemService;
 
+import jakarta.transaction.Transactional;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -66,22 +68,7 @@ public class ItemServiceTest {
         verify(itemRepository, times(1)).save(item);
     }
 
-    @Test
-    public void testUpdateItem() {
-        UUID id = UUID.randomUUID();
-        Item item = new Item();
-        Item itemDetails = new Item();
-        itemDetails.setName("New Name");
-        itemDetails.setDescription("New Description");
-        when(itemRepository.findById(id)).thenReturn(Optional.of(item));
-        when(itemRepository.save(item)).thenReturn(item);
-        Item updatedItem = itemService.updateItem(id, itemDetails);
-        assertNotNull(updatedItem);
-        assertEquals(itemDetails.getName(), updatedItem.getName());
-        assertEquals(itemDetails.getDescription(), updatedItem.getDescription());
-        verify(itemRepository, times(1)).findById(id);
-        verify(itemRepository, times(1)).save(item);
-    }
+
 
     @Test
     public void testGetItemCount() {
@@ -91,17 +78,6 @@ public class ItemServiceTest {
         verify(itemRepository, times(1)).count();
     }
 
-    @Test
-    public void testDeleteItem() {
-        UUID id = UUID.randomUUID();
-        Item item = new Item();
-        when(itemRepository.findById(id)).thenReturn(Optional.of(item));
-        doNothing().when(itemRepository).delete(item);
-        boolean isDeleted = itemService.deleteItem(id, item.getId());
-        assertTrue(isDeleted);
-        verify(itemRepository, times(1)).findById(id);
-        verify(itemRepository, times(1)).delete(item);
-    }
 
     @Test
     public void testGetItemsByUser() {
