@@ -27,9 +27,7 @@ export class RegisterComponent {
         // console.log(data);
         this.isSuccessful = true;
         this.isSignUpFailed = false;
-        setTimeout(() => {
-          this.router.navigate(['/login']);
-        }, 2000);
+        this.router.navigate(['/login']);
       },
       error: (err) => {
         this.errorMessage = err.error.message;

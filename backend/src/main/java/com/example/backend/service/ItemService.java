@@ -28,9 +28,9 @@ public class ItemService {
         return itemRepository.findById(id).orElse(null);
     }
 
-    public Item getItemByUserId(UUID id, UUID itemId) {
+    public Item getItemByUserId(UUID userId, UUID itemId) {
         Item item = getItemById(itemId);
-        if (item == null || !item.getUser().getId().equals(id))
+        if (item == null || !item.getUser().getId().equals(userId))
             return null;
         
         return item;

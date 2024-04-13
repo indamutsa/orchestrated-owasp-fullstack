@@ -1,8 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { StorageService } from './storage.service';
-import { CanActivate, CanLoad, Router } from '@angular/router';
 
 const API_AUTH = 'http://localhost:8080/api/auth/';
 
@@ -39,11 +37,23 @@ export class AuthService {
     );
   }
 
-  logout(): Observable<any> {
-    return this.http.post(API_AUTH + 'logout', {}, httpOptions);
+  refreshToken(refreshToken: string): Observable<any> {
+    if (!refreshToken) {
+      throw new Error('Refresh token is required');
+    }
+    const httpOptions = {
+      withCredentials: true,
+    };
+    return this.http.post(
+      API_AUTH + 'refreshtoken',
+      {
+        refreshToken,
+      },
+      httpOptions
+    );
   }
 
-  refreshToken(): Observable<any> {
-    return this.http.post(API_AUTH + 'refresh', {}, httpOptions);
+  logout(): Observable<any> {
+    return this.http.post(API_AUTH + 'logout', {}, httpOptions);
   }
 }

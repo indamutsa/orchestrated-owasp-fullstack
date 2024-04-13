@@ -3,29 +3,13 @@ package com.example.backend.models;
 import java.time.Instant;
 import java.util.UUID;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-
-@Entity(name = "refreshtoken")
 public class RefreshToken {
-  @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+
   private UUID id;
-
-  @ManyToOne
-  @JoinColumn(name = "user_id", referencedColumnName = "id")
-  private User user;
-
-  @Column(nullable = false, unique = true)
+  private UUID userId; // Changed from User user to UUID userId
   private String token;
-
-  @Column(nullable = false)
   private Instant expiryDate;
+  private Instant creationDate;
 
   //getters and setters
   public UUID getId() {
@@ -36,12 +20,12 @@ public class RefreshToken {
       this.id = id;
   }
     
-  public User getUser() {
-      return user;
+  public UUID getUserId() { // Changed from User getUser() to UUID getUserId()
+      return userId;
   }
     
-  public void setUser(User user) {
-      this.user = user;
+  public void setUserId(UUID userId) { // Changed from void setUser(User user) to void setUserId(UUID userId)
+      this.userId = userId;
   }
     
   public String getToken() {
@@ -65,7 +49,7 @@ public class RefreshToken {
     public String toString() {
         return "RefreshToken{" +
                 "id=" + id +
-                ", user=" + user +
+                ", userId=" + userId + // Changed from ", user=" + user to ", userId=" + userId
                 ", token='" + token + '\'' +
                 ", expiryDate=" + expiryDate +
                 '}';

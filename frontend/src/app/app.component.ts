@@ -3,6 +3,7 @@ import { AuthService } from './services/auth.service';
 import { StorageService } from './services/storage.service';
 import { Subscription } from 'rxjs';
 import { EventBusService } from './shared/EventBusService';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -21,7 +22,8 @@ export class AppComponent {
   constructor(
     private storageService: StorageService,
     private authService: AuthService,
-    private eventBusService: EventBusService
+    private eventBusService: EventBusService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -47,8 +49,9 @@ export class AppComponent {
       next: (res) => {
         console.log(res);
         this.storageService.clean();
-
-        window.location.reload();
+        this.isLoggedIn = false;
+        this.router.navigate(['/login']);
+        // window.location.reload();
       },
       error: (err) => {
         console.log(err);

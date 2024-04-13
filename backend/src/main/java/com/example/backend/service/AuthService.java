@@ -64,4 +64,8 @@ public class AuthService implements UserDetailsService{
 
         userRepository.save(user);
     }
+
+    public User getUserById(UUID userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
 }

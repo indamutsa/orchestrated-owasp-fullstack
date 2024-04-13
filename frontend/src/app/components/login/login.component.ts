@@ -33,10 +33,7 @@ export class LoginComponent implements OnInit {
     if (this.storageService.isLoggedIn()) {
       this.isLoggedIn = true;
       this.roles = this.storageService.getUser().roles;
-
-      setTimeout(() => {
-        this.router.navigate(['/']);
-      }, 500);
+      this.router.navigate(['/']);
     }
   }
 

@@ -43,6 +43,8 @@ export class StorageService {
   }
 
   public saveUser(user: any): void {
+    console.log('saveUser', user);
+
     this.removeItem(USER_KEY); // Use the removeItem method to ensure consistent behavior.
     this.setItem(USER_KEY, JSON.stringify(user)); // Use the setItem method for abstraction.
   }

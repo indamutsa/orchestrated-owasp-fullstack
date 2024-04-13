@@ -1,5 +1,5 @@
 import {
-    HTTP_INTERCEPTORS,
+  HTTP_INTERCEPTORS,
   HttpErrorResponse,
   HttpEvent,
   HttpHandler,
@@ -16,6 +16,7 @@ import { EventData } from '../shared/EventData';
 @Injectable()
 export class HttpRequestInterceptor implements HttpInterceptor {
   private isRefreshing = false;
+  private refreshToken = '';
 
   constructor(
     private storageService: StorageService,
@@ -49,16 +50,21 @@ export class HttpRequestInterceptor implements HttpInterceptor {
   private handle401Error(request: HttpRequest<any>, next: HttpHandler) {
     if (!this.isRefreshing) {
       this.isRefreshing = true;
+      this.refreshToken = this.storageService.getUser().refreshToken;
+
+      // console.log('refreshToken -- before', this.refreshToken);
 
       if (this.storageService.isLoggedIn()) {
-        return this.authService.refreshToken().pipe(
+        return this.authService.refreshToken(this.refreshToken).pipe(
           switchMap(() => {
+            // console.log('Token refreshed');
             this.isRefreshing = false;
 
-            return next.handle(request);
+            return next.handle(request.clone({ withCredentials: true }));
           }),
           catchError((error) => {
             this.isRefreshing = false;
+            console.log('Token refresh failed', error);
 
             if (error.status == '403') {
               this.eventBusService.emit(new EventData('logout', null));
@@ -70,7 +76,7 @@ export class HttpRequestInterceptor implements HttpInterceptor {
       }
     }
 
-    return next.handle(request);
+    return next.handle(request.clone({ withCredentials: true }));
   }
 }
 

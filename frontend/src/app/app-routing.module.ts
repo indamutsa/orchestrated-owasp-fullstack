@@ -8,6 +8,7 @@ import { LoginComponent } from './components/login/login.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { RegisterComponent } from './components/register/register.component';
 import { AuthGuard } from './guards/auth.guard';
+import { ItemDetailsComponent } from './components/item.details/item.details.component';
 
 const routes: Routes = [
   { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
@@ -17,6 +18,7 @@ const routes: Routes = [
   { path: 'user', component: BoardUserComponent, canActivate: [AuthGuard] },
   { path: 'mod', component: BoardModeratorComponent, canActivate: [AuthGuard] },
   { path: 'admin', component: BoardAdminComponent, canActivate: [AuthGuard] },
+  { path: 'item/:id', component: ItemDetailsComponent, canActivate: [AuthGuard] },
   {
     path: '',
     component: HomeComponent,

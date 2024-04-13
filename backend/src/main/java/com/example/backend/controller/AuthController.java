@@ -16,11 +16,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.CrossOrigin;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid ;
@@ -44,7 +45,6 @@ import com.example.backend.service.UserDetailsImpl;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600, allowCredentials="true")
 public class AuthController {
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -117,6 +117,7 @@ public class AuthController {
         ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
 
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
+        System.out.println("Refresh Token: " + refreshToken.getToken());
 
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(item -> item.getAuthority())
@@ -136,24 +137,39 @@ public class AuthController {
     @PostMapping("/refreshtoken")
     public ResponseEntity<?> refreshtoken(@Valid @RequestBody RefreshTokenRequest request) {
         String requestRefreshToken = request.getRefreshToken();
-
+        
         Optional<RefreshToken> refreshTokenOptional = refreshTokenService.findByToken(requestRefreshToken);
-
         if (!refreshTokenOptional.isPresent()) {
-            return ResponseEntity.ok(new TokenRefreshResponse("Unkown Refresh token...!", requestRefreshToken));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new TokenRefreshResponse("Unknown Refresh token!", requestRefreshToken));
         }
 
-        RefreshToken refreshToken = refreshTokenOptional.get();
-        refreshTokenService.verifyExpiration(refreshToken);
+        RefreshToken refreshTokenReq = refreshTokenOptional.get();
+        if (!refreshTokenService.verifyExpiration(refreshTokenReq)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new TokenRefreshResponse("Refresh token is expired", null));
+        }
+  
+        User user = authService.getUserById(refreshTokenReq.getUserId());
+        UserDetailsImpl userDetails = UserDetailsImpl.build(user);
 
-        User user = refreshToken.getUser();
-        String token = jwtUtils.generateTokenFromUsername(user.getUsername());
+        ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
 
-        // Invalidate the refresh token after it's used
-        refreshTokenService.invalidateRefreshToken(requestRefreshToken);
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(item -> item.getAuthority())
+                .collect(Collectors.toList());
 
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, token).body(new TokenRefreshResponse(token, requestRefreshToken));
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
+                .body(new UserInfoResponse(
+                    jwtCookie.toString(),
+                    refreshToken.getToken(),
+                    userDetails.getId(),
+                    userDetails.getUsername(),
+                    userDetails.getEmail(),
+                    roles
+                ));
     }
+
+
 
     @PostMapping("/logout")
     public ResponseEntity<?> logoutUser(@RequestBody String refreshToken ,HttpServletRequest request) {

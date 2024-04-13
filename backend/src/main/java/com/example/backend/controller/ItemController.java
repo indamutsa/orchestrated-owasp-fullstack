@@ -34,17 +34,18 @@ public class ItemController {
         return ResponseEntity.ok().body(items);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Item> getItem(@PathVariable("id") UUID id) {
-        Item item = itemService.getItemById(id);
+    @GetMapping("/{itemId}")
+    public ResponseEntity<Item> getItem(@PathVariable UUID itemId, @RequestParam UUID userId) {
+        // UUID id = userId.getId();
+        Item item = itemService.getItemByUserId(userId, itemId);
         if (item == null)
             return ResponseEntity.notFound().build();
         return new ResponseEntity<>(item, HttpStatus.OK);
     }
 
     // Get items by user id
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Item>> getItemsByUser(@PathVariable UUID userId) {
+    @GetMapping("/user")
+    public ResponseEntity<List<Item>> getItemsByUser(@RequestParam UUID userId) {
         List<Item> items = itemService.getItemsByUser(userId);
         return ResponseEntity.ok().body(items);
     }
@@ -65,7 +66,7 @@ public class ItemController {
 
     @DeleteMapping("/{userId}")
     public ResponseEntity<Void> deleteItem(@PathVariable UUID userId, @RequestBody ItemIdWrapper itemIdWrapper) {
-        UUID itemId = itemIdWrapper.getItemId();
+        UUID itemId = itemIdWrapper.getId();
         boolean deleted = itemService.deleteItem(userId, itemId);
         if (!deleted)
             return ResponseEntity.notFound().build();

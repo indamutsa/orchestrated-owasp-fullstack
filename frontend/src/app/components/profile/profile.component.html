@@ -1,8 +1,12 @@
 @if (currentUser) {
 <div class="container">
-  <header class="jumbotron">
+  <header class="bg-secondary-subtle border-top-0 rounded">
     <h3>
-      <strong>{{ currentUser.username }}</strong> Profile
+      <strong>{{
+        currentUser.username.charAt(0).toUpperCase() +
+          currentUser.username.slice(1)
+      }}</strong>
+      Profile
     </h3>
   </header>
   <p>
@@ -10,12 +14,12 @@
     {{ currentUser.email }}
   </p>
   <strong>Roles:</strong>
-  <ul>
+  <ul class="list-group">
     @for (role of currentUser.roles; track role) {
-    <li>{{ role }}</li>
+    <li class="list-group-item">{{ role }}</li>
     }
   </ul>
 </div>
 } @else {
-<p>Please login.</p>
+<p class="alert alert-info">Please login.</p>
 }

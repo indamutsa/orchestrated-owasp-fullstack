@@ -21,7 +21,8 @@ import {
 } from '@angular/common/http';
 import { httpInterceptorProviders } from './interceptors/interceptors';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { NavbarComponent } from './components/navbar/navbar.component'; // import this
+import { NavbarComponent } from './components/navbar/navbar.component';
+import { ItemDetailsComponent } from './components/item.details/item.details.component'; // import this
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import { NavbarComponent } from './components/navbar/navbar.component'; // impor
     BoardModeratorComponent,
     BoardUserComponent,
     NavbarComponent,
+    ItemDetailsComponent,
   ],
   imports: [
     BrowserModule,
