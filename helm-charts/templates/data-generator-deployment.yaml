@@ -1,0 +1,17 @@
+# data-generator-job.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Values.dataGenerator.name }}
+spec:
+  template:
+    spec:
+      initContainers:
+      - name: check-db-ready
+        image: busybox:1.28
+        command: ['sh', '-c', 'until nslookup {{ .Values.db.name }}; do echo waiting for db; sleep 2; done; until nslookup {{ .Values.app.name }}; do echo waiting for app; sleep 2; done;']
+      containers:
+      - name: {{ .Values.dataGenerator.name }}
+        image: "{{ .Values.dataGenerator.image }}"
+      restartPolicy: Never
+  backoffLimit: 4

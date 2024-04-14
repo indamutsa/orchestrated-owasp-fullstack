@@ -1,0 +1,31 @@
+# ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.ingress.name }}
+spec:
+  rules:
+  - host: item.local
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/app"
+        backend:
+          service:
+            name: {{ .Values.app.name }}
+            port:
+              number: {{ .Values.app.port }}
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: {{ .Values.angular.name }}
+            port:
+              number: {{ .Values.angular.port }}
+      - pathType: Prefix
+        path: "/adminer"
+        backend:
+          service:
+            name: {{ .Values.adminer.name }}
+            port:
+              number: {{ .Values.adminer.port }}

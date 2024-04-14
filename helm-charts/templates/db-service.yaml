@@ -1,0 +1,12 @@
+# db-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.db.name }}
+spec:
+  type: NodePort
+  ports:
+  - port: {{ .Values.db.port }}
+    targetPort: {{ .Values.db.containerPort }}
+  selector:
+    app: {{ .Values.db.name }}

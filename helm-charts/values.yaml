@@ -1,0 +1,54 @@
+# Default values for helm-charts.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+# values.yaml
+app:
+  name: backend
+  image: indamutsa/app-item:1.0.2
+  containerPort: 8080
+  port: 8080
+  springDatasourceUrl: jdbc:postgresql://db:5432/mydb
+  springDatasourceUsername: postgres
+  springDatasourcePassword: secret
+  healthcheck:
+    test: ["CMD-SHELL", "timeout 5 bash -c '</dev/tcp/backend/8080' || exit 1"]
+    interval: 10 
+    timeout: 5
+    retries: 3
+
+db:
+  name: db
+  image: indamutsa/db-item:1.0.0
+  containerPort: 5432
+  port: 5432
+  postgresDb: mydb
+  postgresUser: postgres
+  postgresPassword: secret
+  healthcheck:
+    # test: ["CMD", "sh", "-c", "pg_isready -U $POSTGRES_USER"]
+    interval: 10
+    timeout: 5
+    retries: 3
+
+angular:
+  name: angular
+  image: indamutsa/angular-item:1.0.2
+  containerPort: 4200
+  port: 4200
+
+adminer:
+  name: adminer
+  image: adminer:4.8.1-standalone
+  containerPort: 8080
+  port: 8099
+
+dataGenerator:
+  name: data-generator
+  image: indamutsa/data-generator-item:1.0.3
+
+ingress:
+  name: my-ingress-name
+  host: item.local

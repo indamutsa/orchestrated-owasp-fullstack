@@ -1,0 +1,44 @@
+# db-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.db.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.db.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.db.name }}
+    spec:
+      containers:
+      - name: {{ .Values.db.name }}
+        image: "{{ .Values.db.image }}"
+        ports:
+        - containerPort: {{ .Values.db.containerPort }}
+        env:
+        - name: POSTGRES_DB
+          value: {{ .Values.db.postgresDb }}
+        - name: POSTGRES_USER
+          value: {{ .Values.db.postgresUser }}
+        - name: POSTGRES_PASSWORD
+          value: {{ .Values.db.postgresPassword }}
+        # volumeMounts:
+        # - name: init-script
+        #   mountPath: /docker-entrypoint-initdb.d/init.sql
+        #   subPath: init.sql
+        readinessProbe:
+          exec:
+            command: 
+            - /bin/sh
+            - -c
+            - /usr/bin/pg_isready -U $POSTGRES_USER
+          periodSeconds: {{ .Values.db.healthcheck.interval }}
+          timeoutSeconds: {{ .Values.db.healthcheck.timeout }}
+          failureThreshold: {{ .Values.db.healthcheck.retries }}
+      # volumes:
+      # - name: init-script
+      #   hostPath:
+      #     path: {{ .Values.db.volumeMount }}

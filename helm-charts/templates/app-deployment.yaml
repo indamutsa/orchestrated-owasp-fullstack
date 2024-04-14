@@ -1,0 +1,33 @@
+# app-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.app.name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.app.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.app.name }}
+    spec:
+      containers:
+      - name: {{ .Values.app.name }}
+        image: "{{ .Values.app.image }}"
+        ports:
+        - containerPort: {{ .Values.app.containerPort }}
+        env:
+        - name: SPRING_DATASOURCE_URL
+          value: {{ .Values.app.springDatasourceUrl }}
+        - name: SPRING_DATASOURCE_USERNAME
+          value: {{ .Values.app.springDatasourceUsername }}
+        - name: SPRING_DATASOURCE_PASSWORD
+          value: {{ .Values.app.springDatasourcePassword }}
+        # readinessProbe:
+        #   exec:
+        #     command: {{ .Values.app.healthcheck.test }}
+        #   periodSeconds: {{ .Values.app.healthcheck.interval }}
+        #   timeoutSeconds: {{ .Values.app.healthcheck.timeout }}
+        #   failureThreshold: {{ .Values.app.healthcheck.retries }}

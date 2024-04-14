@@ -1,0 +1,12 @@
+# adminer-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.adminer.name }}
+spec:
+  type: NodePort
+  ports:
+  - port: {{ .Values.adminer.port }}
+    targetPort: {{ .Values.adminer.containerPort }}
+  selector:
+    app: {{ .Values.adminer.name }}

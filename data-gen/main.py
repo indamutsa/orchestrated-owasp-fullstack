@@ -25,11 +25,24 @@ cur = conn.cursor()
 # Define roles
 roles = [1, 2, 3]
 
-
-
 # Define users
 users = ["lissette", "grace", "arsene", "markus", "dane", "samantha"]
 for user in users:
+    # SQL query to check if the user already exists
+    check_user_query = """
+    SELECT 1 FROM users WHERE username = %s;
+    """
+
+    # Execute the query
+    cur.execute(check_user_query, (user,))
+
+    # Fetch the result
+    result = cur.fetchone()
+
+    # If the user already exists, skip the insertion
+    if result is not None:
+        continue
+    
     user_id = str(uuid.uuid4())
     email = f"{user}@indamutsa.net"
     user_roles = random.sample(roles, random.randint(1, 3))

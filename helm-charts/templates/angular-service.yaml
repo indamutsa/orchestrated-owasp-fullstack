@@ -1,0 +1,12 @@
+# angular-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.angular.name }}
+spec:
+  type: LoadBalancer
+  ports:
+  - port: {{ .Values.angular.port }}
+    targetPort: {{ .Values.angular.containerPort }}
+  selector:
+    app: {{ .Values.angular.name }}
