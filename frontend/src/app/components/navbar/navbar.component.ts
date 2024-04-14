@@ -49,8 +49,8 @@ export class NavbarComponent {
       next: (res) => {
         console.log(res);
         this.storageService.clean();
-
-        window.location.reload();
+        this.router.navigate(['/login']);
+        // window.location.reload();
       },
       error: (err) => {
         console.log(err);

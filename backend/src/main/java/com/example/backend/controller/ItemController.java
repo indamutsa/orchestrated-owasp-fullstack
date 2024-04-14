@@ -65,7 +65,7 @@ public class ItemController {
 
     @DeleteMapping("/{itemId}")
     public ResponseEntity<Void> deleteItem(@PathVariable UUID itemId, @RequestParam UUID userId) {
-        System.out.println("Delete item: " + itemId + " by user: " + userId);
+        // System.out.println("Delete item: " + itemId + " by user: " + userId);
         boolean deleted = itemService.deleteItem(userId, itemId);
         if (!deleted)
             return ResponseEntity.notFound().build();
