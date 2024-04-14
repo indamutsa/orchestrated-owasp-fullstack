@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/items")
-@CrossOrigin(origins = "http://localhost:4200", maxAge = 3600, allowCredentials="true")
+@CrossOrigin(origins = "${backend.app.frontendUrl}", maxAge = 3600, allowCredentials="true")
 public class ItemController {
     @Autowired
     private ItemService itemService;

@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -53,12 +54,15 @@ public class AuthConfig {
         return new BCryptPasswordEncoder();
     }
 
+    @Value("${backend.app.frontendUrl}")
+    private String frontendUrl;
+    
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .cors(cors -> cors.configurationSource(request -> {
                     CorsConfiguration corsConfiguration = new CorsConfiguration();
-                    corsConfiguration.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));
+                    corsConfiguration.setAllowedOrigins(Collections.singletonList(frontendUrl));
                     corsConfiguration.setAllowedMethods(Arrays.asList(
                         HttpMethod.GET.name(), 
                         HttpMethod.POST.name(), 

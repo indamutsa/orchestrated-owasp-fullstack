@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject, tap } from 'rxjs';
+import { server_endpoint } from '../../env.json';
 
-const ITEM_API = 'http://localhost:8080/api/items';
+const ITEM_API = `http://${server_endpoint.ingress}/api/items`;
 
 @Injectable({
   providedIn: 'root',

@@ -2,8 +2,9 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { StorageService } from './storage.service';
+import { server_endpoint } from '../../env.json';
 
-const API_AUTH = 'http://localhost:8080/api/auth/';
+const API_AUTH = `http://${server_endpoint.ingress}/api/auth/`;
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
@@ -13,7 +14,10 @@ const httpOptions = {
   providedIn: 'root',
 })
 export class AuthService {
-  constructor(private http: HttpClient, private storageService: StorageService) {}
+  constructor(
+    private http: HttpClient,
+    private storageService: StorageService
+  ) {}
 
   login(username: string, password: string): Observable<any> {
     return this.http.post(
@@ -55,7 +59,7 @@ export class AuthService {
   }
 
   logout(): Observable<any> {
-    window.localStorage.clear(); 
+    window.localStorage.clear();
     this.storageService.clear();
     return this.http.post(API_AUTH + 'logout', {}, httpOptions);
   }

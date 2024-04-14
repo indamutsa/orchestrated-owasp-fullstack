@@ -40,10 +40,24 @@ docker run -it --rm --net=host
 indamutsa/working-image:1.0.0 zsh
 
 
-docker tag basf-data-generator indamutsa/data-generator-item:1.0.2; 
-docker tag basf-angular indamutsa/angular-item:1.0.2;  
-docker tag basf-app indamutsa/app-item:1.0.2;
+# docker tag basf-data-generator indamutsa/data-generator-item:1.0.2; 
+# docker tag basf-angular indamutsa/angular-item:1.0.2;  
+# docker tag basf-app indamutsa/app-item:1.0.2;
 
-docker push indamutsa/data-generator-item:1.0.2;
-docker push indamutsa/angular-item:1.0.2;
-docker push indamutsa/app-item:1.0.2;
+# docker push indamutsa/data-generator-item:1.0.2;
+# docker push indamutsa/angular-item:1.0.2;
+# docker push indamutsa/app-item:1.0.2;
+
+
+
+docker tag basf-angular:latest indamutsa/angular-item:1.0.3;  
+docker tag basf-app:latest indamutsa/app-item:1.0.3;
+
+docker push indamutsa/angular-item:1.0.3;
+docker push indamutsa/app-item:1.0.3;
+
+docker rmi indamutsa/angular-item:1.0.3; 
+docker rmi indamutsa/app-item:1.0.3;
+
+docker rmi basf-angular:latest;
+docker rmi basf-app:latest;

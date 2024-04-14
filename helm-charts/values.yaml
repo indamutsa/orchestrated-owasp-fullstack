@@ -7,7 +7,7 @@ replicaCount: 1
 # values.yaml
 app:
   name: backend
-  image: indamutsa/app-item:1.0.2
+  image: indamutsa/app-item:1.0.3
   containerPort: 8080
   port: 8080
   springDatasourceUrl: jdbc:postgresql://db:5432/mydb
@@ -15,7 +15,7 @@ app:
   springDatasourcePassword: secret
   healthcheck:
     test: ["CMD-SHELL", "timeout 5 bash -c '</dev/tcp/backend/8080' || exit 1"]
-    interval: 10 
+    interval: 10
     timeout: 5
     retries: 3
 
@@ -35,7 +35,7 @@ db:
 
 angular:
   name: angular
-  image: indamutsa/angular-item:1.0.2
+  image: indamutsa/angular-item:1.0.3
   containerPort: 4200
   port: 4200
 
