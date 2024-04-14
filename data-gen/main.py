@@ -9,7 +9,7 @@ fake = Faker()
 
 # Database connection parameters
 db_params = {
-    "host": "localhost",
+    "host": "db",
     "port": 5432,
     "dbname": "mydb",
     "user": "postgres",
@@ -24,6 +24,8 @@ cur = conn.cursor()
 
 # Define roles
 roles = [1, 2, 3]
+
+
 
 # Define users
 users = ["lissette", "grace", "arsene", "markus", "dane", "samantha"]
