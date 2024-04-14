@@ -32,6 +32,10 @@ export class StorageService {
 
   clear(): void {
     if (this.storage instanceof Storage) {
+      localStorage.clear();
+      sessionStorage.clear();
+      window.localStorage.clear();
+
       this.storage.clear();
     } else {
       this.storage = {};
