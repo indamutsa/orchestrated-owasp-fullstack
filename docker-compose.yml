@@ -3,7 +3,7 @@ version: "3.8"
 services:
   app:
     container_name: backend
-    image: indamutsa/app-item:1.0.1
+    image: indamutsa/app-item:1.0.2
     # build:
     #   context: ./backend
     #   dockerfile: Dockerfile
@@ -42,7 +42,7 @@ services:
 
   angular:
     container_name: angular
-    image: indamutsa/angular-item:1.0.1
+    image: indamutsa/angular-item:1.0.2
     # build:
     #   context: ./frontend
     #   dockerfile: Dockerfile
@@ -60,7 +60,7 @@ services:
     restart: always
 
   data-generator:
-    image: indamutsa/data-generator-item:1.0.1
+    image: indamutsa/data-generator-item:1.0.3
     # build: ./data-gen
     container_name: data-generator
     depends_on:
