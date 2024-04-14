@@ -9,7 +9,7 @@ fake = Faker()
 
 # Database connection parameters
 db_params = {
-    "host": "db",
+    "host": "localhost",
     "port": 5432,
     "dbname": "mydb",
     "user": "postgres",
