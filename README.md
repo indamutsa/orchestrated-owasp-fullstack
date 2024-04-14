@@ -28,7 +28,7 @@ To engage with this project, users should have a fundamental understanding of fu
 
 Before you begin, ensure you have met the following requirements:
 
-- You have installed the required versions of `Java (version 17)`, `Node.js (version v20.12.1)`, and `npm (v10.5.0)`.
+- You have docker version `25.0.3` or higher installed.
 - You have a basic understanding of `full-stack development` using `Java`, `Spring Boot`, `Angular`, and `PostgreSQL`.
 - Have a basic understanding of `RESTful APIs` and `SQL`.
 - You should have enough Knowledge around OWASP Top 10 vulnerabilities. The application takes care into account of the following vulnerabilities:
