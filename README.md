@@ -137,9 +137,23 @@ minikube dashboard
 Open the browser and navigate to `http://item.local/` to view the application.
 
 ![alt text](images/login.png)
+
 ![alt text](images/dashboard-web.png)
 
-The above command will stop the docker compose and remove all the volumes, orphans and images.
+![alt text](images/view.png)
+
+![alt text](images/update.png)
+
+![alt text](images/delete.png)
+
+![alt text](images/profile.png)
+
+- View the database by navigating to `http://item.local/adminer`.
+  ![alt text](images/db-init.png)
+
+  ![alt text](images/db-tables.png)
+
+  ![alt text](images/db-items.png)
 
 ## Contact
 
